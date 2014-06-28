@@ -2,6 +2,7 @@ var Q = require('q');
 var tessel = require('tessel');
 var ambientlib = require('ambient-attx4');
 var climatelib = require('climate-si7005');
+var Reportr = require('reportr-api');
 
 var config = require("./config");
 
@@ -9,6 +10,11 @@ var climate = climatelib.use(tessel.port[config.ports.climate]);
 var ambient = ambientlib.use(tessel.port[config.ports.ambient]);
 
 var ambientReady = false, climateReady = false;
+
+var client = new Reportr({
+    host: config.host,
+    auth: config.auth
+});
 
 
 var track = function() {
@@ -26,18 +32,7 @@ var track = function() {
             'light': light
         };
 
-        return Q.nfcall(request.post, 'http://some.server.com/', {
-            'json': true,
-            'auth': {
-                'user': config.auth.username,
-                'pass': config.auth.password,
-                'sendImmediately': false
-            },
-            'body': JSON.stringify({
-                'type': config.eventName,
-                'properties': properties
-            })
-        }));
+        return client.postEvent(config.eventName, properties);
     })
     .then(function() {
         console.log("Sent!");
