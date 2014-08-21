@@ -19,7 +19,7 @@ var client = new Reportr({
 
 var track = function() {
     return Q.all([
-        Q.nfcall(ambient.getSoundLevel, ambient)
+        Q.nfcall(ambient.getSoundLevel, ambient),
         Q.nfcall(ambient.getLightLevel, ambient),
         Q.nfcall(climate.readTemperature, climate),
         Q.nfcall(climate.readHumidity, climate)
