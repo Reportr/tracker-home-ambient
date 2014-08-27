@@ -1,4 +1,5 @@
 var Q = require('q');
+var _ = require('lodash');
 var tessel = require('tessel');
 var ambientlib = require('ambient-attx4');
 var climatelib = require('climate-si7005');
@@ -21,14 +22,16 @@ var client = new Reportr({
 var track = function() {
     var properties = {};
 
-    return Q.nfcall(ambient.getSoundLevel.bind(ambient))
-    .then(function(sound) {
+    return Q.nfcall(ambient.getSoundBuffer.bind(ambient))
+    .then(function(sounds) {
+        var sound = _.reduce(sounds, function(n, x) { return n + x; }, 0)/sounds.length;
         console.log("sound=", sound);
         properties.sound = sound;
 
-        return Q.nfcall(ambient.getLightLevel.bind(ambient));
+        return Q.nfcall(ambient.getLightBuffer.bind(ambient));
     })
-    .then(function(light) {
+    .then(function(lights) {
+        var light = _.reduce(lights, function(n, x) { return n + x; }, 0)/lights.length;
         console.log("light=", light);
         properties.light = light;
 
