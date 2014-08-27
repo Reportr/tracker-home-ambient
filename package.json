@@ -1,7 +1,7 @@
 {
     "name": "tracker-home-ambient",
     "description": "Tracker for home ambient (light, sound and temperature) using tessel.io.",
-    "version": "0.0.0",
+    "version": "1.0.0",
     "author": "samypesse@gmail.com",
     "homepage": "https://github.com/Reportr/tracker-home-ambient",
     "bugs": "https://github.com/Reportr/tracker-home-ambient/issues",
