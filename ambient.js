@@ -6,6 +6,7 @@ var Reportr = require('reportr-api');
 
 var config = require("./config");
 
+console.log("Preparing with port: for climate="+config.ports.climate+", for ambient="+config.ports.ambient);
 var climate = climatelib.use(tessel.port[config.ports.climate]);
 var ambient = ambientlib.use(tessel.port[config.ports.ambient]);
 
@@ -18,19 +19,30 @@ var client = new Reportr({
 
 
 var track = function() {
-    return Q.all([
-        Q.nfcall(ambient.getSoundLevel, ambient),
-        Q.nfcall(ambient.getLightLevel, ambient),
-        Q.nfcall(climate.readTemperature, climate),
-        Q.nfcall(climate.readHumidity, climate)
-    ])
-    .spread(function(sound, light, temperature, humidity) {
-        var properties = {
-            'temperature': temperature,
-            'humidity': humidity,
-            'sound': sound,
-            'light': light
-        };
+    var properties = {};
+
+    return Q.nfcall(ambient.getSoundLevel, ambient)
+    .then(function(sound) {
+        console.log("sound=", sound);
+        properties.sound = sound;
+
+        return Q.nfcall(ambient.getLightLevel, ambient);
+    })
+    .then(function(light) {
+        console.log("light=", light);
+        properties.light = light;
+
+        return Q.nfcall(climate.readTemperature, climate);
+    })
+    .then(function(temperature) {
+        console.log("temperature=", temperature);
+        properties.temperature = temperature;
+
+        return Q.nfcall(climate.readHumidity, climate);
+    })
+    .then(function(humidity) {
+        console.log("humidity=", humidity);
+        properties.humidity = humidity;
 
         return client.postEvent(config.eventName, properties);
     })
@@ -38,20 +50,25 @@ var track = function() {
         console.log("Sent!");
     }, function(err) {
         console.log("Error", err);
-    })
+    });
 };
 
 var start = function() {
+    if (!ambientReady || !climateReady) return;
+    console.log("start tracking with interval", config.interval/1000, "seconds");
     setInterval(track, config.interval);
+    track();
 };
 
 
 climate.on('ready', function () {
+    console.log("climate is ready");
     climateReady = true;
     start();
 });
 
 ambient.on('ready', function () {
+    console.log("ambient is ready");
     ambientReady = true;
     start();
 });
