@@ -13,7 +13,7 @@ $ npm install
 
 Then edit the file `config.js` to adapt to your configuration (ports, auth, host, ...).
 
-Then deployed using:
+Then deployed using (after following instructions at [start.tessel.io](http://start.tessel.io/install):
 
 ```
 $ tessel run ambient.js
