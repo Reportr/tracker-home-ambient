@@ -21,24 +21,24 @@ var client = new Reportr({
 var track = function() {
     var properties = {};
 
-    return Q.nfcall(ambient.getSoundLevel, ambient)
+    return Q.nfcall(ambient.getSoundLevel.bind(ambient))
     .then(function(sound) {
         console.log("sound=", sound);
         properties.sound = sound;
 
-        return Q.nfcall(ambient.getLightLevel, ambient);
+        return Q.nfcall(ambient.getLightLevel.bind(ambient));
     })
     .then(function(light) {
         console.log("light=", light);
         properties.light = light;
 
-        return Q.nfcall(climate.readTemperature, climate);
+        return Q.nfcall(climate.readTemperature.bind(climate));
     })
     .then(function(temperature) {
         console.log("temperature=", temperature);
         properties.temperature = temperature;
 
-        return Q.nfcall(climate.readHumidity, climate);
+        return Q.nfcall(climate.readHumidity.bind(climate));
     })
     .then(function(humidity) {
         console.log("humidity=", humidity);
